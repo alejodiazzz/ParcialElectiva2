@@ -1,0 +1,29 @@
+<%- include('templates/header.ejs', {title: title}) %>
+
+<div class="container mt-4">
+  <h1>Registros</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Departamento</th>
+        <th>Municipio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% data.forEach(record => { %>
+        <tr>
+          <td><%= record.id %></td>
+          <td><%= record.date %></td>
+          <td><%= record.department %></td>
+          <td><%= record.town %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <a href="/new-record" class="btn btn-primary">Agregar Nuevo Registro</a>
+</div>
+
+</body>
+</html>
