@@ -1,0 +1,74 @@
+<%- include('templates/header.ejs', {title: title}) %>
+
+<div class="container mt-4">
+  <h1 class="mb-4">Agregar Nuevo Registro</h1>
+  <form action="/" method="POST">
+    <div class="mb-3">
+      <label for="date" class="form-label">Fecha</label>
+      <input type="date" class="form-control" id="date" name="date" required>
+    </div>
+    <div class="mb-3">
+      <label for="department" class="form-label">Departamento</label>
+      <select class="form-select" id="department" name="department" required>
+        <option selected disabled value="">Seleccione...</option>
+        <% departments.forEach(dept => { %>
+          <option value="<%= dept.code %>"><%= dept.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="town" class="form-label">Municipio</label>
+      <select class="form-select" id="town" name="town" required>
+        <option selected disabled value="">Seleccione un departamento primero...</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="/" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const departmentSelect = document.getElementById('department');
+    const townSelect = document.getElementById('town');
+
+    departmentSelect.addEventListener('change', async (event) => {
+      const departmentCode = event.target.value;
+      if (!departmentCode) {
+        townSelect.innerHTML = '<option selected disabled value="">Seleccione un departamento primero...</option>';
+        return;
+      }
+
+      townSelect.innerHTML = '<option selected disabled value="">Cargando...</option>';
+      townSelect.disabled = true;
+
+      try {
+        const response = await fetch(`/api/towns/${departmentCode}`);
+        if (!response.ok) {
+          throw new Error('La respuesta de la red no fue satisfactoria');
+        }
+        const towns = await response.json();
+
+        townSelect.innerHTML = '<option selected disabled value="">Seleccione...</option>';
+        if (towns.length === 0) {
+          townSelect.innerHTML = '<option selected disabled value="">No hay municipios para este departamento</option>';
+        } else {
+          towns.forEach(town => {
+            const option = document.createElement('option');
+            option.value = town.code;
+            option.textContent = town.name;
+            townSelect.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error al obtener los municipios:', error);
+        townSelect.innerHTML = '<option selected disabled value="">Error al cargar municipios</option>';
+      } finally {
+        townSelect.disabled = false;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
